@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+
+/* Your custom styles below */
+
+:root {
+  font-family: Roboto;
+  line-height: 2.5;
+  font-weight: 400;
+  /* ...rest of your styles... */
+}
+
