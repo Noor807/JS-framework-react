@@ -4,11 +4,12 @@ import HomePage from "./components/pages/HomePage";
 import ProductDetail from "./components/pages/ProductDetail";
 import CartPage from "./components/pages/CartPage";
 import Navbar from "./components/NavBar";
-import { CartProvider } from "./context/CartContext"; // 👈 Import the provider
+import { CartProvider } from "./context/CartContext";
+import { Toaster } from "react-hot-toast"; // 👈 Import Toaster
 
 function App() {
   return (
-    <CartProvider> 
+    <CartProvider>
       <Router>
         <Navbar />
         <main>
@@ -18,6 +19,8 @@ function App() {
             <Route path="/cart" element={<CartPage />} />
           </Routes>
         </main>
+
+        <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       </Router>
     </CartProvider>
   );
