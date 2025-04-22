@@ -1,101 +1,95 @@
-import React, { useEffect, useState } from 'react';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../../context/CartContext"; // ✅ Import useCart
 
 const CartPage: React.FC = () => {
-  const [cart, setCart] = useState<any[]>([]);
+  const { cart, updateCart } = useCart(); // ✅ Access cart context
+  const navigate = useNavigate();
 
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const cartData = JSON.parse(localStorage.getItem('cart') || '[]');
-    // Ensure each product has a quantity (default to 1)
-    const normalizedCart = cartData.map((item: any) => ({
-      ...item,
-      quantity: item.quantity || 1,
-    }));
-    setCart(normalizedCart);
-  }, []);
-
-  // Update cart in state and localStorage
-  const updateCart = (updatedCart: any[]) => {
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-    setCart([...updatedCart]); // Force re-render with spread
+  // Function to handle quantity changes
+  const handleQuantityChange = (id: string, change: number) => {
+    const updatedCart = cart.map((product) =>
+      product.id === id
+        ? { ...product, quantity: Math.max(1, product.quantity! + change) } // Prevent quantity going below 1
+        : product
+    );
+    updateCart(updatedCart); // Update context and localStorage
   };
 
-  // Remove a product
-  const handleRemove = (productId: string) => {
-    const updatedCart = cart.filter(product => product.id !== productId);
-    updateCart(updatedCart);
+  // Function to handle removing a product from the cart
+  const handleRemoveProduct = (id: string) => {
+    const updatedCart = cart.filter((product) => product.id !== id);
+    updateCart(updatedCart); // Update context and localStorage
   };
 
-  // Change quantity of a product
-  const handleQuantityChange = (productId: string, change: number) => {
-    const updatedCart = cart.map(product => {
-      if (product.id === productId) {
-        const newQuantity = Math.max(1, (product.quantity || 1) + change);
-        return { ...product, quantity: newQuantity };
-      }
-      return product;
-    });
-    updateCart(updatedCart);
-  };
+  // Calculate total price
+  const totalPrice = cart.reduce(
+    (total, product) => total + product.discountedPrice * (product.quantity || 1),
+    0
+  );
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Shopping Cart</h1>
+      <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
 
       {cart.length === 0 ? (
-        <p className="text-center text-gray-600">Your cart is empty.</p>
+        <p>Your cart is empty. Start shopping!</p>
       ) : (
-        <ul className="space-y-6">
-          {cart.map(product => (
-            <li
-              key={product.id}
-              className="flex items-center justify-between border p-4 rounded-md shadow-sm hover:bg-gray-100 transition duration-200"
-            >
-              <div className="flex items-center space-x-4">
-                <img
-                  src={product.image.url}
-                  alt={product.image.alt}
-                  className="w-20 h-20 object-cover rounded-lg"
-                />
-                <div className="flex-1">
-                  <h2 className="font-semibold text-lg">{product.title}</h2>
-                  <p className="text-gray-600 text-sm">{product.description}</p>
-                  <p className="text-lg font-semibold text-red-600">
-                    ${product.discountedPrice.toFixed(2)}{' '}
-                    <span className="line-through text-gray-500 text-sm ml-2">
-                      ${product.price.toFixed(2)}
-                    </span>
-                  </p>
+        <div>
+          <ul className="space-y-4">
+            {cart.map((product) => (
+              <li key={product.id} className="flex items-center justify-between border-b py-4">
+                <div className="flex items-center gap-4">
+                  <img
+                    src={product.image.url}
+                    alt={product.image.alt}
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                  <div>
+                    <p className="font-semibold">{product.title}</p>
+                    <p className="text-sm text-gray-500">{product.description}</p>
+                  </div>
                 </div>
-              </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleQuantityChange(product.id, -1)}
+                    className="bg-gray-300 text-black px-2 py-1 rounded"
+                  >
+                    -
+                  </button>
+                  <span>{product.quantity}</span>
+                  <button
+                    onClick={() => handleQuantityChange(product.id, 1)}
+                    className="bg-gray-300 text-black px-2 py-1 rounded"
+                  >
+                    +
+                  </button>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="font-semibold">
+                    ${product.discountedPrice.toFixed(2)}
+                  </span>
+                  <button
+                    onClick={() => handleRemoveProduct(product.id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
 
-              {/* Quantity Controls */}
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={() => handleQuantityChange(product.id, -1)}
-                  className="px-3 py-2 bg-gray-300 text-black rounded-full hover:bg-gray-400"
-                >
-                  -
-                </button>
-                <span className="text-lg">{product.quantity}</span>
-                <button
-                  onClick={() => handleQuantityChange(product.id, 1)}
-                  className="px-3 py-2 bg-gray-300 text-black rounded-full hover:bg-gray-400"
-                >
-                  +
-                </button>
-              </div>
-
-              {/* Remove Button */}
-              <button
-                onClick={() => handleRemove(product.id)}
-                className="ml-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-              >
-                Remove
-              </button>
-            </li>
-          ))}
-        </ul>
+          <div className="mt-6 flex justify-between items-center">
+            <p className="font-semibold text-lg">Total: ${totalPrice.toFixed(2)}</p>
+            <button
+              onClick={() => navigate("/checkout")}
+              className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600"
+            >
+              Proceed to Checkout
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

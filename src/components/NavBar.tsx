@@ -1,24 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Home, ShoppingCart, Menu, X } from "lucide-react";
+import { useCart } from "../context/CartContext"; // 👈 import the hook
 
 const Navbar: React.FC = () => {
-  const [cartCount, setCartCount] = useState(0);
+  const { cartCount } = useCart(); // 👈 use context here
   const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const updateCartCount = () => {
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      const totalQuantity = cart.reduce((sum: number, item: any) => {
-        return sum + (item.quantity || 1);
-      }, 0);
-      setCartCount(totalQuantity);
-    };
-
-    updateCartCount();
-    window.addEventListener("storage", updateCartCount);
-    return () => window.removeEventListener("storage", updateCartCount);
-  }, []);
 
   return (
     <nav className="bg-[#001f3f] text-white shadow-md sticky top-0 z-50">

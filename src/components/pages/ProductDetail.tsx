@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useCart } from "../../context/CartContext"; // ✅ Import useCart
 
 interface Review {
   id: string;
@@ -21,16 +22,18 @@ interface Product {
   rating: number;
   tags: string[];
   reviews: Review[];
+  quantity?: number; // ✅ Add optional quantity
 }
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams();
-  const navigate = useNavigate();  // To navigate to the cart page
+  const navigate = useNavigate();
+  const { cart, updateCart } = useCart(); // ✅ Use cart context
+
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch product data
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -48,15 +51,27 @@ const ProductDetail: React.FC = () => {
   }, [id]);
 
   const handleAddToCart = () => {
-    if (product) {
-      // Add the product to cart (You might need a global state management here like Context or Redux)
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart.push(product);
-      localStorage.setItem('cart', JSON.stringify(cart));
+    if (!product) return;
 
-      // Navigate to the Cart Page
-      navigate("/cart");
+    const existingProduct = cart.find((item) => item.id === product.id);
+    let updatedCart;
+
+    if (existingProduct) {
+      updatedCart = cart.map((item) =>
+        item.id === product.id ? { ...item, quantity: (item.quantity || 1) + 1 } : item
+      );
+    } else {
+      updatedCart = [
+        ...cart,
+        {
+          ...product,
+          quantity: 1,
+        },
+      ];
     }
+
+    updateCart(updatedCart);
+    navigate("/cart");
   };
 
   if (loading) return <p>Loading product...</p>;
@@ -92,7 +107,6 @@ const ProductDetail: React.FC = () => {
             </div>
           </div>
 
-          {/* Add to Cart Button */}
           <button
             onClick={handleAddToCart}
             className="mt-6 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -102,7 +116,6 @@ const ProductDetail: React.FC = () => {
         </div>
       </div>
 
-      {/* Reviews Section */}
       <div className="mt-10">
         <h2 className="text-2xl font-bold mb-4">Customer Reviews</h2>
         {product.reviews.length === 0 ? (
