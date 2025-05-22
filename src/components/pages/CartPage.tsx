@@ -7,7 +7,6 @@ const CartPage: React.FC = () => {
   const { cart, updateCart } = useCart();
   const navigate = useNavigate();
 
-  // Function to handle quantity changes
   const handleQuantityChange = (id: string, change: number) => {
     const updatedCart = cart.map((product) =>
       product.id === id
@@ -15,14 +14,13 @@ const CartPage: React.FC = () => {
         : product
     );
     updateCart(updatedCart);
-    toast.success("Quantity updated"); // ✅ Toast
+    toast.success("Quantity updated");
   };
 
-  // Function to handle removing a product from the cart
   const handleRemoveProduct = (id: string) => {
     const updatedCart = cart.filter((product) => product.id !== id);
     updateCart(updatedCart);
-    toast.success("Item removed from cart"); // ✅ Toast
+    toast.success("Item removed from cart");
   };
 
   const totalPrice = cart.reduce(
@@ -86,10 +84,19 @@ const CartPage: React.FC = () => {
             <p className="font-semibold text-lg">Total: ${totalPrice.toFixed(2)}</p>
             <button
               onClick={() => {
-                toast("Proceeding to checkout..."); // ✅ Optional toast
+                if (cart.length === 0) {
+                  toast.error("Your cart is empty!");
+                  return;
+                }
+                toast.success("Proceeding to checkout...");
                 navigate("/checkout");
               }}
-              className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600"
+              disabled={cart.length === 0}
+              className={`py-2 px-6 rounded-lg font-semibold transition-colors duration-200 ${
+                cart.length === 0
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-blue-500 text-white hover:bg-blue-600"
+              }`}
             >
               Proceed to Checkout
             </button>
