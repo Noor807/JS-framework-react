@@ -8,6 +8,15 @@ Rainydays is a modern **React + TypeScript + Vite** template for building scalab
 
 ---
 
+---
+
+## 🔗 Links
+
+- 💻 GitHub Repository: [Noor807/JS-framework-react](https://github.com/Noor807/JS-framework-react)  
+- 🌐 Live Demo (Netlify): [Rainydays](https://noroff-rainydays.netlify.app)
+
+---------------
+
 ## 📌 Project Overview
 
 Rainydays is a React template designed to simplify web app development:
@@ -31,12 +40,6 @@ Rainydays is a React template designed to simplify web app development:
   <img src="https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
 </p>
 
----
-
-## 🔗 Links
-
-- 💻 GitHub Repository: [Noor807/JS-framework-react](https://github.com/Noor807/JS-framework-react)  
-- 🌐 Live Demo (Netlify): [Rainydays](https://noroff-rainydays.netlify.app)
 
 ---
 
