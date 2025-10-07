@@ -8,7 +8,6 @@ Rainydays is a modern **React + TypeScript + Vite** template for building scalab
 
 ---
 
----
 
 ## 🔗 Links
 
