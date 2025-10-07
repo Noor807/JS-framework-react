@@ -4,6 +4,9 @@
 
 <img width="608" height="352" alt="Screenshot 2025-10-07 at 13 20 55" src="https://github.com/user-attachments/assets/8f305ecc-7b69-461c-959c-81687a54fd2d" />
 
+
+
+
 Rainydays is a modern **React + TypeScript + Vite** template for building scalable, responsive, and maintainable web applications. It includes best practices for development, linting, accessibility, and deployment.
 
 ---
